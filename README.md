@@ -1,4 +1,4 @@
-# *IN PROGRESS, please disregard until end of June*
+## *IN PROGRESS, please disregard until end of June*
 
 ### Step 1: Basic Visualization
 
