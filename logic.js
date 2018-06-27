@@ -1,23 +1,23 @@
 // links for APIs
 var earthquakeURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson"
-var faultLinesURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+var tectonicsURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
 
 // render map
-renderMap(earthquakeURL, faultLinesURL);
+renderMap(earthquakeURL, tectonicsURL);
 
-function renderMap(earthquakeURL, faultLinesURL) {
+function renderMap(earthquakeURL, tectonicsURL) {
   
     d3.json(earthquakeURL, function(data) {
         var earthquakeData = data;
-        d3.json(faultLinesURL, function(data) {
-            var faultLineData = data;
+        d3.json(tectonicsURL, function(data) {
+            var tectonicsData = data;
 
-            createFeatures(earthquakeData, faultLineData);
+            createFeatures(earthquakeData, tectonicsData);
         });
     });
 
-    function createFeatures(earthquakeData, faultLineData) {
+    function createFeatures(earthquakeData, tectonicsData) {
 
         // define functions and create markers for earthquakes
         function onEachQuakeLayer(feature, layer) {
@@ -33,7 +33,7 @@ function renderMap(earthquakeURL, faultLinesURL) {
         };
 
         // create tectonic plates (fault lines)
-        function onEachFaultLine(feature, layer) {
+        function onEachTectLine(feature, layer) {
             L.polyline(feature.geometry.coordinates);
         };
 
@@ -42,8 +42,8 @@ function renderMap(earthquakeURL, faultLinesURL) {
             pointToLayer: onEachQuakeLayer
         });
 
-        var faultLines = L.geoJSON(faultLineData, {
-            onEachFeature: onEachFaultLine,
+        var tectonics = L.geoJSON(tectonicsData, {
+            onEachFeature: onEachTectLine,
             style: {
                 weight: 1.5,
                 color: "green"
@@ -63,11 +63,11 @@ function renderMap(earthquakeURL, faultLinesURL) {
             onEachFeature: onEachEarthquake
         });
 
-        createMap(earthquakes, faultLines, timelineLayer);
+        createMap(earthquakes, tectonics, timelineLayer);
     };
 
     // create map
-    function createMap(earthquakes, faultLines, timelineLayer) {
+    function createMap(earthquakes, tectonics, timelineLayer) {
 
      // light layer
       var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?" +
@@ -95,14 +95,14 @@ function renderMap(earthquakeURL, faultLinesURL) {
         // overlay maps
         var overlayMaps = {
             "Earthquakes": earthquakes,
-            "Tectonic Plates": faultLines
+            "Tectonic Plates": tectonics
         };
 
         // default map
         var map = L.map("map", {
             center: [37.0902, -95.7129],
             zoom: 3,
-            layers: [lightmap, faultLines, earthquakes],
+            layers: [lightmap, tectonics, earthquakes],
             scrollWheelZoom: false
         });
 
